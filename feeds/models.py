@@ -7,4 +7,11 @@ class Feed(models.Model):
     link = models.URLField()
     description = models.TextField()
     xml_link = models.URLField(unique=True)
-    followers = models.ManyToManyField(settings.AUTH_USER_MODEL)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='feeds',
+        on_delete=models.CASCADE
+        )
+
+    class Meta:
+        unique_together = ('xml_link', 'owner')
