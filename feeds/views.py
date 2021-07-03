@@ -4,6 +4,7 @@ from rest_framework.response import Response
 
 from feeds import serializers
 from feeds import utils
+from feeds import validators
 
 
 class FeedViewSet(mixins.CreateModelMixin,
@@ -24,6 +25,7 @@ class FeedViewSet(mixins.CreateModelMixin,
             )
         create_serializer.is_valid(raise_exception=True)
         feed = utils.parse_feed(create_serializer.data.get('url'))
+        validators.validate_feed(feed)
         data = utils.get_feed_data(feed)
         data['owner'] = request.user.pk
         data['xml_link'] = create_serializer.data.get('url')
