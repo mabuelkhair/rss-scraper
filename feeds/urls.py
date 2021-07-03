@@ -1,7 +1,7 @@
-from django.urls import path
+from rest_framework.routers import DefaultRouter
 
 from feeds import views
 
-urlpatterns = [
-    path('', views.FeedAPIView.as_view())
-]
+router = DefaultRouter()
+router.register('', views.FeedViewSet, basename='feeds')
+urlpatterns = router.urls

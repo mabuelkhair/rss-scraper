@@ -1,25 +1,28 @@
-from rest_framework import generics, mixins
+from types import SimpleNamespace
+
+from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
-from feeds.serializers import FeedSerializer
+from feeds import serializers
+from feeds import utils
 
 
-class FeedAPIView(mixins.ListModelMixin,
-                  mixins.CreateModelMixin,
-                  mixins.DestroyModelMixin,
-                  generics.GenericAPIView):
+class FeedViewSet(viewsets.ModelViewSet):
 
-    serializer_class = FeedSerializer
+    serializer_class = serializers.FeedSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return self.request.user.feeds
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
+    def create(self, request, *args, **kwargs):
+        serializer = serializers.CreateFeedSerializer(
+            data=request.data,
+            context={'request': request}
+            )
+        serializer.is_valid(raise_exception=True)
+        feed = utils.parse_feed(serializer.data.get('url'))
+        data = utils.get_feed_data(feed)
+        data['owner'] = request.user.pk
+        data['xml_link'] = serializer.data.get('url')
+        super().create(SimpleNamespace(data=data), *args, **kwargs)
