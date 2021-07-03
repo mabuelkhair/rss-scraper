@@ -1,7 +1,6 @@
-from types import SimpleNamespace
-
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from feeds import serializers
 from feeds import utils
@@ -19,13 +18,18 @@ class FeedViewSet(mixins.CreateModelMixin,
         return self.request.user.feeds
 
     def create(self, request, *args, **kwargs):
-        serializer = serializers.CreateFeedSerializer(
+        create_serializer = serializers.CreateFeedSerializer(
             data=request.data,
             context={'request': request}
             )
-        serializer.is_valid(raise_exception=True)
-        feed = utils.parse_feed(serializer.data.get('url'))
+        create_serializer.is_valid(raise_exception=True)
+        feed = utils.parse_feed(create_serializer.data.get('url'))
         data = utils.get_feed_data(feed)
         data['owner'] = request.user.pk
-        data['xml_link'] = serializer.data.get('url')
-        return super().create(SimpleNamespace(data=data), *args, **kwargs)
+        data['xml_link'] = create_serializer.data.get('url')
+
+        serializer = serializers.FeedSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        utils.create_items(serializer.data.get('id'), feed)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

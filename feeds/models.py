@@ -15,3 +15,16 @@ class Feed(models.Model):
 
     class Meta:
         unique_together = ('xml_link', 'owner')
+
+
+class Item(models.Model):
+    title = models.TextField()
+    link = models.URLField()
+    description = models.TextField()
+    published_at = models.DateTimeField()
+    read = models.BooleanField(default=False)
+    feed = models.ForeignKey(
+        Feed,
+        related_name='items',
+        on_delete=models.CASCADE
+        )
