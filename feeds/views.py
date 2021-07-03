@@ -1,13 +1,16 @@
 from types import SimpleNamespace
 
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 
 from feeds import serializers
 from feeds import utils
 
 
-class FeedViewSet(viewsets.ModelViewSet):
+class FeedViewSet(mixins.CreateModelMixin,
+                  mixins.DestroyModelMixin,
+                  mixins.ListModelMixin,
+                  viewsets.GenericViewSet):
 
     serializer_class = serializers.FeedSerializer
     permission_classes = [IsAuthenticated]
@@ -25,4 +28,4 @@ class FeedViewSet(viewsets.ModelViewSet):
         data = utils.get_feed_data(feed)
         data['owner'] = request.user.pk
         data['xml_link'] = serializer.data.get('url')
-        super().create(SimpleNamespace(data=data), *args, **kwargs)
+        return super().create(SimpleNamespace(data=data), *args, **kwargs)
