@@ -24,8 +24,11 @@ def get_item_data(item):
         "title": item.get('title'),
         "link": item.get('link'),
         "description": item.get('description'),
-        "published_at": datetime.fromtimestamp(mktime(item.get('published_parsed'))),
     }
+    published_at = item.get('published_parsed')
+    if published_at:
+        data['published_at'] = datetime.fromtimestamp(mktime(published_at))
+
     return data
 
 

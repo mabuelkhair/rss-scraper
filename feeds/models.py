@@ -22,7 +22,7 @@ class Item(models.Model):
     title = models.TextField(null=True)
     link = models.URLField(null=True)
     description = models.TextField(null=True)
-    published_at = models.DateTimeField()
+    published_at = models.DateTimeField(null=True)
     read = models.BooleanField(default=False)
     feed = models.ForeignKey(
         Feed,
