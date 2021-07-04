@@ -2,9 +2,15 @@ from rest_framework.exceptions import ValidationError
 
 
 def validate_feed(feed):
-    if feed.status != 200 or not feed.feed:
+    if not feed.feed:
         raise ValidationError({"errors": ["Invalid feed"]})
+    validate_feed_channel(feed.feed)
     validate_feed_items(feed)
+
+
+def validate_feed_channel(feed):
+    if not feed.get('title') or not feed.get('link') or not feed.get('description'):
+        raise ValidationError({"errors": ["Invalid feed"]})
 
 
 def validate_feed_items(feed):

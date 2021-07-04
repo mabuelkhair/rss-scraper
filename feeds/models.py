@@ -7,7 +7,7 @@ class Feed(models.Model):
     title = models.TextField()
     link = models.URLField()
     description = models.TextField()
-    xml_link = models.URLField(unique=True)
+    xml_link = models.URLField()
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='feeds',

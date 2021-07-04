@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from feeds import serializers
 from feeds import utils
 from feeds import validators
+from feeds import models
 
 
 class FeedViewSet(mixins.CreateModelMixin,
@@ -35,3 +36,14 @@ class FeedViewSet(mixins.CreateModelMixin,
         serializer.save()
         utils.create_items(serializer.data.get('id'), feed)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ItemViewSet(mixins.ListModelMixin,
+                  viewsets.GenericViewSet):
+
+    serializer_class = serializers.ItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        ids_list = self.request.user.feeds.values_list('pk', flat=True)
+        return models.Item.objects.filter(feed_id__in=ids_list)
