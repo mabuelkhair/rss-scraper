@@ -1,6 +1,7 @@
 from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.decorators import action
 
 from feeds import serializers
 from feeds import utils
@@ -47,3 +48,16 @@ class ItemViewSet(mixins.ListModelMixin,
     def get_queryset(self):
         ids_list = self.request.user.feeds.values_list('pk', flat=True)
         return models.Item.objects.filter(feed_id__in=ids_list)
+
+    @action(detail=True, methods=['post'])
+    def read(self, request, *args, **kwargs):
+        feed_ids = request.user.feeds.values_list('pk', flat=True)
+        serializer = serializers.ReadItemSerializer(
+            data=request.data,
+            context={'feed_ids': feed_ids}
+            )
+        serializer.is_valid(raise_exception=True)
+        models.Item.objects.filter(
+            id__in=serializer.validated_data.get('ids')
+            ).update(read=True)
+        return Response(status=status.HTTP_200_OK, data=serializer.data)
