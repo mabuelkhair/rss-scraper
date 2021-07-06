@@ -1,3 +1,4 @@
+from django.utils.timezone import now
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -13,6 +14,8 @@ class Feed(models.Model):
         related_name='feeds',
         on_delete=models.CASCADE
         )
+    last_updated_at = models.DateTimeField(default=now)
+    update = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ('xml_link', 'owner')
@@ -29,8 +32,12 @@ class Item(models.Model):
         related_name='items',
         on_delete=models.CASCADE
         )
+    last_updated_at = models.DateTimeField(default=now)
 
     def clean(self):
         super().clean()
         if self.title is None and self.description is None:
             raise ValidationError('Both title and description can not be None')
+
+    class Meta:
+        ordering = ['-last_updated_at']
