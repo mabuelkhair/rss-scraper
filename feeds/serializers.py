@@ -40,8 +40,7 @@ class ReadItemSerializer(serializers.Serializer):
         fields = '__all__'
 
     def validate_ids(self, value):
-        feed_ids = self.context['feed_ids']
-        if models.Item.objects.filter(feed_id__in=feed_ids, id__in=value).count() < len(value):
+        if self.context['items'].filter(id__in=value).count() < len(value):
             raise serializers.ValidationError(
                 "Some ids are invalid or you do not have permission to edit"
                 )

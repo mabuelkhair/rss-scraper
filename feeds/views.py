@@ -3,10 +3,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
-from feeds import serializers
-from feeds import utils
-from feeds import validators
-from feeds import models
+from feeds import serializers, utils, validators, models
+from feeds.permissions import IsFeedOwner
 
 
 class FeedViewSet(mixins.CreateModelMixin,
@@ -18,7 +16,7 @@ class FeedViewSet(mixins.CreateModelMixin,
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return self.request.user.feeds
+        return self.request.user.feeds.all()
 
     def create(self, request, *args, **kwargs):
         create_serializer = serializers.CreateFeedSerializer(
@@ -43,18 +41,19 @@ class ItemViewSet(mixins.ListModelMixin,
                   viewsets.GenericViewSet):
 
     serializer_class = serializers.ItemSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsFeedOwner]
 
     def get_queryset(self):
+        if self.kwargs.get('feed_pk'):
+            return models.Item.objects.filter(feed_id=self.kwargs.get('feed_pk'))
         ids_list = self.request.user.feeds.values_list('pk', flat=True)
         return models.Item.objects.filter(feed_id__in=ids_list)
 
-    @action(detail=True, methods=['post'])
+    @action(detail=False, methods=['post'])
     def read(self, request, *args, **kwargs):
-        feed_ids = request.user.feeds.values_list('pk', flat=True)
         serializer = serializers.ReadItemSerializer(
             data=request.data,
-            context={'feed_ids': feed_ids}
+            context={'items': self.get_queryset()}
             )
         serializer.is_valid(raise_exception=True)
         models.Item.objects.filter(
