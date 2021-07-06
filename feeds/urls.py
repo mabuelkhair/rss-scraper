@@ -5,6 +5,7 @@ from feeds import views
 
 router = routers.SimpleRouter()
 router.register('feeds', views.FeedViewSet, basename='feeds')
+router.register('items', views.ItemViewSet, basename='items')
 feed_router = routers.NestedSimpleRouter(router, 'feeds', lookup='feed')
 feed_router.register('items', views.ItemViewSet, basename='feed-items')
 urlpatterns = [
