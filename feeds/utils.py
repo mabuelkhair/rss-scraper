@@ -1,7 +1,9 @@
-import feedparser
 from time import mktime
 from datetime import datetime
+import feedparser
 from django.utils import timezone
+from django.conf import settings
+from django.core.mail import send_mail
 
 from feeds.models import Item, Feed
 from feeds.validators import validate_feed
@@ -50,7 +52,6 @@ def create_items(feed_id, feed_xml):
 
 
 def update_feed_data(feed, feed_xml):
-    feed.updated = True
     data = get_feed_data(feed_xml)
     feed.__dict__.update(data)
     feed.save()
@@ -77,6 +78,21 @@ def update_feed(feed):
         if feed_has_updates(feed, feed_xml):
             update_feed_data(feed, feed_xml)
             update_items_data(feed_xml.get('entries'), feed.pk)
+        feed.updated = True
+        feed.save()
         return True
     except Feed.DoesNotExist:
         return False
+
+
+def send_failure_notification(feed):
+
+    subject = 'Failed to update feed'
+    message = \
+        'Hi {}, System faild to update this feed ({}) and auto updating is disabled for this feed.'.format(
+            feed.owner.username,
+            feed.xml_link
+        )
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = [feed.owner.email, ]
+    send_mail(subject, message, email_from, recipient_list)

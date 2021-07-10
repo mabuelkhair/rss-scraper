@@ -1,11 +1,10 @@
 from django.conf import settings
-
 from rest_framework.exceptions import ValidationError
 from celery.exceptions import MaxRetriesExceededError
 from celery import shared_task, group
 
 from feeds.models import Feed
-from feeds.utils import update_feed
+from feeds.utils import update_feed, send_failure_notification
 
 
 @shared_task(max_retries=settings.CELERY_MAX_RETRIES, default_retry_delay=settings.CELERY_RETRY_DELAY)
@@ -22,6 +21,7 @@ def parallel_feed_update_task(feed_pk):
         except MaxRetriesExceededError:
             feed.updated = False
             feed.save()
+            send_failure_notification(feed)
 
 
 @shared_task

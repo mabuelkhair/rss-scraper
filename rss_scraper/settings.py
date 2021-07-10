@@ -144,3 +144,11 @@ SIMPLE_JWT = {
 CELERY_MAX_RETRIES = 2
 # max retries in seconds
 CELERY_RETRY_DELAY = 20
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'test@example.com'
+EMAIL_HOST_PASSWORD = 'password'
