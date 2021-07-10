@@ -14,7 +14,7 @@ class Feed(models.Model):
         related_name='feeds',
         on_delete=models.CASCADE
         )
-    last_updated_at = models.DateTimeField(default=now)
+    modified_at = models.DateTimeField(null=True)
     updated = models.BooleanField(default=True)
 
     class Meta:
@@ -33,6 +33,7 @@ class Item(models.Model):
         on_delete=models.CASCADE
         )
     last_updated_at = models.DateTimeField(default=now)
+    guid = models.TextField()
 
     def clean(self):
         super().clean()
@@ -41,3 +42,4 @@ class Item(models.Model):
 
     class Meta:
         ordering = ['-last_updated_at']
+        unique_together = ('feed', 'guid')

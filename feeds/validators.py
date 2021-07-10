@@ -22,3 +22,6 @@ def validate_feed_items(feed):
         # feed item should has at least title or description
         if not item.get('title') and not item.get('description'):
             raise ValidationError({"errors": ["feed has invalid item(s)"]})
+
+        if not item.get('guid'):
+            raise ValidationError({"errors": ["guid is missing in some items"]})

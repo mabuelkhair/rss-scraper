@@ -16,6 +16,9 @@ def get_feed_data(feed_xml):
         "link": feed_xml.feed.get('link'),
         "description": feed_xml.feed.get('description'),
     }
+
+    if feed_xml.get('modified_parsed'):
+        data['modified_at'] = datetime.fromtimestamp(mktime(feed_xml.get('modified_parsed')))
     return data
 
 
@@ -24,11 +27,11 @@ def get_item_data(item):
         "title": item.get('title'),
         "link": item.get('link'),
         "description": item.get('description'),
+        "guid": item.get('guid'),
     }
-    published_at = item.get('published_parsed')
-    if published_at:
-        data['published_at'] = datetime.fromtimestamp(mktime(published_at))
 
+    if item.get('published_parsed'):
+        data['published_at'] = datetime.fromtimestamp(mktime(item.get('published_parsed')))
     return data
 
 
