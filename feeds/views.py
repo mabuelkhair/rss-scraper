@@ -37,6 +37,13 @@ class FeedViewSet(mixins.CreateModelMixin,
         utils.create_items(serializer.data.get('id'), feed)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @action(detail=True, methods=['post'])
+    def force_update(self, request, pk, *args, **kwargs):
+        feed = self.get_object()
+        utils.update_feed(feed)
+        feed.refresh_from_db()
+        return Response(status=status.HTTP_200_OK, data=serializers.FeedSerializer(feed).data)
+
 
 class ItemViewSet(mixins.ListModelMixin,
                   viewsets.GenericViewSet):

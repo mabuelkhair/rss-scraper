@@ -26,7 +26,7 @@ class CreateFeedSerializer(serializers.Serializer):
 class ItemSerializer(serializers.ModelSerializer):
 
     class Meta:
-        exclude = ('feed',)
+        fields = '__all__'
         model = models.Item
 
 
