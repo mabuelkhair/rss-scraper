@@ -2,6 +2,7 @@ from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from django_filters.rest_framework import DjangoFilterBackend
 
 from feeds import serializers, utils, validators, models
 from feeds.permissions import IsFeedOwner
@@ -42,6 +43,8 @@ class ItemViewSet(mixins.ListModelMixin,
 
     serializer_class = serializers.ItemSerializer
     permission_classes = [IsAuthenticated, IsFeedOwner]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['read']
 
     def get_queryset(self):
         if self.kwargs.get('feed_pk'):
