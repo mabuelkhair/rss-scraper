@@ -15,7 +15,7 @@ class Feed(models.Model):
         on_delete=models.CASCADE
         )
     last_updated_at = models.DateTimeField(default=now)
-    update = models.BooleanField(default=True)
+    updated = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ('xml_link', 'owner')
