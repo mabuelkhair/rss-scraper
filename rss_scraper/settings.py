@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework_simplejwt',
     'django_filters',
+    'django_celery_beat',
     'feeds',
 ]
 
@@ -140,3 +141,6 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
 }
+CELERY_MAX_RETRIES = 2
+# max retries in seconds
+CELERY_RETRY_DELAY = 20
