@@ -5,7 +5,7 @@ from celery import Celery
 from feeds.beat_tasks import tasks as beat_tasks
 
 # Set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'rss_scraper.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.default')
 
 BASE_REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
 
