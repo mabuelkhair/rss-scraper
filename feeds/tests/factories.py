@@ -5,7 +5,7 @@ import factory
 from feeds.models import Feed, Item
 
 
-class UserFactory(factory.Factory):
+class UserFactory(factory.django.DjangoModelFactory):
     username = factory.Sequence(lambda n: 'user%d' % n)
     password = factory.Faker('password')
 
@@ -17,7 +17,7 @@ class UserFactory(factory.Factory):
         model = get_user_model()
 
 
-class FeedFactory(factory.Factory):
+class FeedFactory(factory.django.DjangoModelFactory):
     title = factory.Faker("sentence", nb_words=3)
     link = factory.Faker("url")
     description = factory.Faker("sentence", nb_words=7)
@@ -30,7 +30,7 @@ class FeedFactory(factory.Factory):
         model = Feed
 
 
-class ItemFactory(factory.Factory):
+class ItemFactory(factory.django.DjangoModelFactory):
     title = factory.Faker("sentence", nb_words=3)
     link = factory.Faker("url")
     description = factory.Faker("sentence", nb_words=7)
