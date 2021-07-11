@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    command: >
+      sh -c "python3 manage.py migrate --settings=settings.default &&
+             python3 manage.py runserver 0.0.0.0:8000 --settings=settings.default"
+             
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+  celery:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    command: celery -A rss_scraper worker --beat --scheduler django --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - app
+    environment:
+      - REDIS_URL=redis://redis:6379
