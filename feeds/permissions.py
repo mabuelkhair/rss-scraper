@@ -5,7 +5,7 @@ from feeds.models import Feed
 
 class IsFeedOwner(permissions.BasePermission):
     """
-    Object-level permission to only allow owners of an object to edit it.
+    permission class to only allow feed owners to access it if feed_pk in url.
     """
 
     def has_permission(self, request, view):
